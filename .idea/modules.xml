@@ -2,9 +2,9 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/homeStream.iml" filepath="$PROJECT_DIR$/.idea/modules/homeStream.iml" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/homeStream_main.iml" filepath="$PROJECT_DIR$/.idea/modules/homeStream_main.iml" group="homeStream" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/homeStream_test.iml" filepath="$PROJECT_DIR$/.idea/modules/homeStream_test.iml" group="homeStream" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/Homeflix.iml" filepath="$PROJECT_DIR$/.idea/modules/Homeflix.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/Homeflix_main.iml" filepath="$PROJECT_DIR$/.idea/modules/Homeflix_main.iml" group="Homeflix" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/Homeflix_test.iml" filepath="$PROJECT_DIR$/.idea/modules/Homeflix_test.iml" group="Homeflix" />
     </modules>
   </component>
 </project>
