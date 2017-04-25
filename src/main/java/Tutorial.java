@@ -28,7 +28,7 @@ public class Tutorial {
         frame.setContentPane(mediaPlayerComponent);
         frame.setVisible(true);
 
-        mediaPlayerComponent.getMediaPlayer().playMedia(new RandomAccessFileMedia(new File("F:\\Recordings\\WoW\\Raid\\2016-10-13 20-33-59.flv"), 1024*1024));
-        //mediaPlayerComponent.getMediaPlayer().playMedia("http://portalnumber9.com/TEMP/testFile.flv");
+        //mediaPlayerComponent.getMediaPlayer().playMedia(new RandomAccessFileMedia(new File("F:\\Recordings\\WoW\\Raid\\2016-10-13 20-33-59.flv"), 1024*1024));
+        mediaPlayerComponent.getMediaPlayer().playMedia("http://portalnumber9.com/TEMP/testFile.flv");
     }
 }
