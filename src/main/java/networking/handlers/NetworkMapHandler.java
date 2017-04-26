@@ -3,6 +3,7 @@ package networking.handlers;
 import networking.Host;
 import networking.MessageHandler;
 import networking.NetworkMap;
+import networking.Server;
 import networking.protocol.IMessage;
 import networking.protocol.NetworkMapRequest;
 import networking.protocol.NetworkMapResponse;
@@ -23,7 +24,7 @@ public class NetworkMapHandler implements IMessageEventHandler {
             System.out.println("Received NetworkMap from " + messageHandler.host);
             NetworkMapResponse response = ((NetworkMapResponse) message);
             for (Host h : response.networkHosts) {
-                if (NetworkMap.NETWORK_MAP.hostMap.containsKey(h)) continue;
+                if (NetworkMap.NETWORK_MAP.hostMap.containsKey(h) || h.equals(new Host(Server.hostname, Server.port))) continue;
                 try {
                     MessageHandler handler = new MessageHandler(h);
                     handler.identify();
