@@ -11,8 +11,6 @@ import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
 
-import static networking.NetworkMap.NETWORK_MAP;
-
 public class MessageHandler extends Thread {
 
     private final Socket socket;
@@ -21,8 +19,8 @@ public class MessageHandler extends Thread {
     private List<IMessageEventHandler> observers;
     private Gson gson;
 
-    public MessageHandler(String hostname, int port) throws IOException {
-        this(new Socket(hostname, port));
+    public MessageHandler(Host host) throws IOException {
+        this(new Socket(host.hostname, host.port));
     }
 
     public MessageHandler(Socket socket) throws IOException {
@@ -34,13 +32,14 @@ public class MessageHandler extends Thread {
                 .registerSubtype(PartialFileRequest.class)
                 .registerSubtype(SearchCommand.class)
                 .registerSubtype(NetworkMapRequest.class)
-                .registerSubtype(NetworkMapResponse.class);
+                .registerSubtype(NetworkMapResponse.class)
+                .registerSubtype(IdentificationReceive.class)
+                .registerSubtype(IdentificationSend.class);
         this.gson = new GsonBuilder().registerTypeAdapterFactory(typeFactory).create();
 
         bufferedWriter = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
 
-        // TODO figure out how to determine who
-        //NETWORK_MAP.addHostToMap(new Host( , ), this);
+
     }
 
     @Override
@@ -57,7 +56,7 @@ public class MessageHandler extends Thread {
                 String line = reader.readLine();
                 IMessage message = gson.fromJson(line, IMessage.class);
                 for (IMessageEventHandler eventHandler : observers) {
-                    eventHandler.handleMessageEvent(message);
+                    eventHandler.handleMessageEvent(message, this);
                 }
 
             } catch (IOException e) {
@@ -80,6 +79,11 @@ public class MessageHandler extends Thread {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    public void identify() {
+        start();
+        sendMessage(new IdentificationSend(new Host(Server.hostname, Server.port)));
     }
 }
 

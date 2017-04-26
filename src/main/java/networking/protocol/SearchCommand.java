@@ -7,4 +7,5 @@ public class SearchCommand implements IMessage {
     public String hostname;
     public int port;
 
+    public SearchCommand() {}
 }

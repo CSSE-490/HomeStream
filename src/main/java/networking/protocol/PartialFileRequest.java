@@ -7,4 +7,5 @@ public class PartialFileRequest implements IMessage {
     public String fileName;
     public byte[] checksum;
 
+    public PartialFileRequest() {}
 }
