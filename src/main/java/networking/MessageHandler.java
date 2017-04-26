@@ -22,11 +22,12 @@ public class MessageHandler extends Thread {
     public Host host;
 
     public MessageHandler(Host host) throws IOException {
-        this(new Socket(host.hostname, host.port));
+        this(new Socket(host.hostname, host.port), host);
     }
 
-    public MessageHandler(Socket socket) throws IOException {
+    public MessageHandler(Socket socket, Host host) throws IOException {
         this.socket = socket;
+        this.host = host;
         this.run = true;
 
         final RuntimeTypeAdapterFactory<IMessage> typeFactory = RuntimeTypeAdapterFactory.of(IMessage.class, "type")
@@ -89,9 +90,8 @@ public class MessageHandler extends Thread {
     }
 
     public void identify() {
-        this.host = new Host(Server.hostname, Server.port);
         start();
-        sendMessage(new IdentificationSend(this.host));
+        sendMessage(new IdentificationSend(new Host(Server.hostname, Server.port)));
     }
 }
 
