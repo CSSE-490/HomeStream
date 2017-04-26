@@ -21,6 +21,7 @@ public class IdentificationMessageHandler implements IMessageEventHandler {
         } else if (message instanceof IdentificationSend) {
             messageHandler.sendMessage(new IdentificationReceive(Server.hostname, Server.port));
             NetworkMap.NETWORK_MAP.addHostToMap(((IdentificationSend) message).host, messageHandler);
+            messageHandler.host = ((IdentificationSend) message).host;
         }
     }
 }

@@ -18,6 +18,7 @@ public class MessageHandler extends Thread {
     public boolean run;
     private List<IMessageEventHandler> observers;
     private Gson gson;
+    public Host host;
 
     public MessageHandler(Host host) throws IOException {
         this(new Socket(host.hostname, host.port));
@@ -38,8 +39,6 @@ public class MessageHandler extends Thread {
         this.gson = new GsonBuilder().registerTypeAdapterFactory(typeFactory).create();
 
         bufferedWriter = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
-
-
     }
 
     @Override
@@ -51,6 +50,7 @@ public class MessageHandler extends Thread {
             e.printStackTrace();
             return;
         }
+        System.out.println("Ready to accept messages from " + socket.getInetAddress().toString());
         while (run) {
             try {
                 String line = reader.readLine();
@@ -61,6 +61,12 @@ public class MessageHandler extends Thread {
 
             } catch (IOException e) {
                 e.printStackTrace();
+                NetworkMap.NETWORK_MAP.hostMap.remove(this.host);
+                System.out.println("Node " + host.toString() + " disconnected. Closing connection.");
+                try {
+                    socket.close();
+                } catch (IOException e1) {}
+                return;
             }
 
         }
@@ -82,8 +88,9 @@ public class MessageHandler extends Thread {
     }
 
     public void identify() {
+        this.host = new Host(Server.hostname, Server.port);
         start();
-        sendMessage(new IdentificationSend(new Host(Server.hostname, Server.port)));
+        sendMessage(new IdentificationSend(this.host));
     }
 }
 

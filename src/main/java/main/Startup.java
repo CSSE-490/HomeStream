@@ -2,11 +2,13 @@ package main;
 
 import networking.Host;
 import networking.MessageHandler;
+import networking.NetworkMap;
 import networking.Server;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.Arrays;
 
 /**
  * Created by Jesse Shellabarger on 4/26/2017.
@@ -29,36 +31,41 @@ public class Startup {
 
     private static void repl() {
         BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
+        System.out.println("Now accepting commands.");
+        while (true) {
+            try {
+                String line = reader.readLine();
 
-        try {
-            String line = reader.readLine();
+                switch (line) {
+                    case "help":
+                        System.out.println("COMMANDS: " +
+                                "\n\tconnect: Connect to a node in the network" +
+                                "\n\thosts: View the list of available hosts" +
+                                "\n\texit: close the application" +
+                                "\n\thelp: view this help menu");
+                        break;
+                    case "connect":
+                        System.out.println("Please enter the hostname:port of an existing node of the network");
+                        String hostname = reader.readLine();
+                        String[] args = hostname.split(":");
+                        MessageHandler handler = new MessageHandler(new Host(args[0], Integer.parseInt(args[1])));
+                        handler.identify();
+                        break;
+                    case "hosts":
+                        System.out.println(Arrays.toString(NetworkMap.NETWORK_MAP.hostMap.keySet().toArray()));
+                        break;
+                    case "exit":
+                        System.out.println("Goodbye!");
+                        System.exit(1);
+                        break;
+                    default:
+                        System.out.println("Invalid command. Use the help command to view a list of available commands.");
+                }
 
-            switch (line) {
-                case "help":
-                    System.out.println("COMMANDS: " +
-                            "\n\teonnect: Connect to a node in the network" +
-                            "\n\texit: close the application" +
-                            "\n\thelp: view this help menu");
-                    break;
-                case "connect":
-                    System.out.println("Please enter the hostname:port of an existing node of the network");
-                    String hostname = reader.readLine();
-                    String[] args = hostname.split(":");
-                    MessageHandler handler = new MessageHandler(new Host(args[0], Integer.parseInt(args[1])));
-                    handler.identify();
-                    break;
-                case "exit":
-                    System.out.println("Goodbye!");
-                    System.exit(1);
-                    break;
-                default:
-                    System.out.println("Invalid command. Use the help command to view a list of available commands.");
+
+            } catch (IOException e) {
+                e.printStackTrace();
             }
-
-
-
-        } catch (IOException e) {
-            e.printStackTrace();
         }
     }
 }

@@ -32,6 +32,7 @@ public class Server extends Thread{
             Socket socket = null;
             try {
                 socket = serverSocket.accept();
+                System.out.println("Connection accepted from " + socket.getInetAddress().toString());
                 new MessageHandler(socket).start();
             } catch (IOException e) {
                 e.printStackTrace();
