@@ -35,7 +35,10 @@ public class Startup {
 
             switch (line) {
                 case "help":
-                    System.out.println("COMMANDS: ");
+                    System.out.println("COMMANDS: " +
+                            "\n\teonnect: Connect to a node in the network" +
+                            "\n\texit: close the application" +
+                            "\n\thelp: view this help menu");
                     break;
                 case "connect":
                     System.out.println("Please enter the hostname:port of an existing node of the network");
@@ -44,6 +47,12 @@ public class Startup {
                     MessageHandler handler = new MessageHandler(new Host(args[0], Integer.parseInt(args[1])));
                     handler.identify();
                     break;
+                case "exit":
+                    System.out.println("Goodbye!");
+                    System.exit(1);
+                    break;
+                default:
+                    System.out.println("Invalid command. Use the help command to view a list of available commands.");
             }
 
 
