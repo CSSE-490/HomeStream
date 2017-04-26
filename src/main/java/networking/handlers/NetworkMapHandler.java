@@ -17,10 +17,13 @@ public class NetworkMapHandler implements IMessageEventHandler {
     @Override
     public void handleMessageEvent(IMessage message, MessageHandler messageHandler) {
         if (message instanceof NetworkMapRequest){
+            System.out.println("Received request for NetworkMap update from " + messageHandler.host);
             messageHandler.sendMessage(new NetworkMapResponse(NetworkMap.NETWORK_MAP.hostMap.keySet()));
         } else if (message instanceof NetworkMapResponse) {
+            System.out.println("Received NetworkMap from " + messageHandler.host);
             NetworkMapResponse response = ((NetworkMapResponse) message);
             for (Host h : response.networkHosts) {
+                if (NetworkMap.NETWORK_MAP.hostMap.containsKey(h)) continue;
                 try {
                     MessageHandler handler = new MessageHandler(h);
                     handler.identify();
