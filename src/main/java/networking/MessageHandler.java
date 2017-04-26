@@ -3,6 +3,7 @@ package networking;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.typeadapters.RuntimeTypeAdapterFactory;
+import networking.handlers.HandlerFactory;
 import networking.handlers.IMessageEventHandler;
 import networking.protocol.*;
 
@@ -26,7 +27,6 @@ public class MessageHandler extends Thread {
 
     public MessageHandler(Socket socket) throws IOException {
         this.socket = socket;
-        this.observers = new ArrayList<>();
         this.run = true;
 
         final RuntimeTypeAdapterFactory<IMessage> typeFactory = RuntimeTypeAdapterFactory.of(IMessage.class, "type")
@@ -39,6 +39,8 @@ public class MessageHandler extends Thread {
         this.gson = new GsonBuilder().registerTypeAdapterFactory(typeFactory).create();
 
         bufferedWriter = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
+
+        this.observers = HandlerFactory.getdefaultHandlers();
     }
 
     @Override
@@ -68,7 +70,6 @@ public class MessageHandler extends Thread {
                 } catch (IOException e1) {}
                 return;
             }
-
         }
     }
 
