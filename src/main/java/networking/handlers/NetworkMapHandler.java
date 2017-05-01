@@ -24,7 +24,7 @@ public class NetworkMapHandler implements IMessageEventHandler {
             System.out.println("Received NetworkMap from " + messageHandler.host);
             NetworkMapResponse response = ((NetworkMapResponse) message);
             for (Host h : response.networkHosts) {
-                if (NetworkMap.NETWORK_MAP.hostMap.containsKey(h) || h.equals(new Host(Server.hostname, Server.port))) continue;
+                if (NetworkMap.NETWORK_MAP.hostMap.containsKey(h) || h.equals(Server.host)) continue;
                 try {
                     MessageHandler handler = new MessageHandler(h);
                     handler.identify();

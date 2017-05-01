@@ -1,5 +1,7 @@
 package networking;
 
+import networking.protocol.IMessage;
+
 import java.util.Hashtable;
 import java.util.Map;
 
@@ -13,5 +15,12 @@ public enum NetworkMap {
 
     public void addHostToMap(Host host, MessageHandler handler) {
         hostMap.put(host, handler);
+    }
+
+
+    public void broadcast(IMessage message) {
+        synchronized (hostMap) {
+            hostMap.values().stream().forEach((mh) -> mh.sendMessage(message));
+        }
     }
 }

@@ -1,26 +1,35 @@
 package main;
 
+import com.sun.jna.platform.win32.Guid;
 import networking.Host;
 import networking.MessageHandler;
 import networking.NetworkMap;
 import networking.Server;
+import networking.protocol.SearchCommandRequest;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.Arrays;
 
-/**
- * Created by Jesse Shellabarger on 4/26/2017.
- */
+import static main.Settings.SETTINGS;
+import static networking.NetworkMap.NETWORK_MAP;
+
 public class Startup {
 
     public static void main(String[] args) throws IOException {
         int localPort = Integer.parseInt(args[0]);
         new Server(localPort).start();
 
-        if (args.length >= 2) {
-            String networkHost = args[1];
+        String localDirectory = args[1];
+
+        File file = new File(localDirectory);
+        if(file.exists() && file.isDirectory())
+            SETTINGS.searchableDirectories.add(file);
+
+        if (args.length >= 3) {
+            String networkHost = args[2];
             Host host = new Host(networkHost);
             MessageHandler handler = new MessageHandler(host);
             handler.identify();
@@ -42,7 +51,9 @@ public class Startup {
                                 "\n\tconnect: Connect to a node in the network" +
                                 "\n\thosts: View the list of available hosts" +
                                 "\n\texit: close the application" +
-                                "\n\thelp: view this help menu");
+                                "\n\thelp: view this help menu" +
+                                "\n\taddDirectory: Add a directory to the current map"+
+                                "\n\tviewDirectories: Views the current list of locally available directories");
                         break;
                     case "connect":
                         System.out.println("Please enter the hostname:port of an existing node of the network");
@@ -52,17 +63,34 @@ public class Startup {
                         handler.identify();
                         break;
                     case "hosts":
-                        System.out.println(Arrays.toString(NetworkMap.NETWORK_MAP.hostMap.keySet().toArray()));
+                        System.out.println(Arrays.toString(NETWORK_MAP.hostMap.keySet().toArray()));
                         break;
                     case "exit":
                         System.out.println("Goodbye!");
                         System.exit(1);
                         break;
+                    case "addDirectory":
+                        System.out.println("Please enter the directory path");
+                        String fileString = reader.readLine();
+                        File file = new File(fileString );
+                        if(file.exists() && file.isDirectory())
+                            SETTINGS.searchableDirectories.add(file);
+                        else
+                            System.err.println("Does not exist or is not a directory");
+                        break;
+                    case "viewDirectories":
+                        System.out.println(Arrays.toString(SETTINGS.searchableDirectories.toArray()));
+                        break;
+                    case "search":
+                        System.out.println("Please enter the file you are looking for (Regex Allowed):");
+                        String fileRegex = reader.readLine();
+
+                        SearchCommandRequest request = new SearchCommandRequest(fileRegex, Guid.GUID.newGuid());
+                        NETWORK_MAP.broadcast(request);
+                        break;
                     default:
-                        System.out.println("Invalid command. Use the help command to view a list of available commands.");
+                        System.err.println("Invalid command. Use the help command to view a list of available commands.");
                 }
-
-
             } catch (IOException e) {
                 e.printStackTrace();
             }

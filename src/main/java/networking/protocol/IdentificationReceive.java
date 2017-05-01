@@ -8,7 +8,7 @@ public class IdentificationReceive implements IMessage {
 
     public IdentificationReceive() {}
 
-    public IdentificationReceive(String hostname, int port) {
-        this.host = new Host(hostname, port);
+    public IdentificationReceive(Host host) {
+        this.host = host;
     }
 }
