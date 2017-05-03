@@ -16,6 +16,10 @@
 .idea/**/sqlDataSources.xml
 .idea/**/dynamic.xml
 .idea/**/uiDesigner.xml
+.idea/**
+build/**
+classes/**
+watchFolders/**
 
 # Gradle:
 .idea/**/gradle.xml
