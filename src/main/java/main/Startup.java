@@ -53,7 +53,8 @@ public class Startup {
                                 "\n\texit: close the application" +
                                 "\n\thelp: view this help menu" +
                                 "\n\taddDirectory: Add a directory to the current map"+
-                                "\n\tviewDirectories: Views the current list of locally available directories");
+                                "\n\tviewDirectories: Views the current list of locally available directories" +
+                                "\n\tui: Opens the UI");
                         break;
                     case "connect":
                         System.out.println("Please enter the hostname:port of an existing node of the network");
@@ -87,6 +88,9 @@ public class Startup {
 
                         SearchCommandRequest request = new SearchCommandRequest(fileRegex, Guid.GUID.newGuid());
                         NETWORK_MAP.broadcast(request);
+                        break;
+                    case "ui":
+                        UI.startup();
                         break;
                     default:
                         System.err.println("Invalid command. Use the help command to view a list of available commands.");

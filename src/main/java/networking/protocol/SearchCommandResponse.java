@@ -20,6 +20,18 @@ public class SearchCommandResponse implements IMessage {
         this.uniqueIdentifier = uniqueIdentifier;
     }
 
+    public List<FoundFile> getFiles() {
+        return files;
+    }
+
+    public Host getProvider() {
+        return provider;
+    }
+
+    public Guid.GUID getUniqueIdentifier() {
+        return uniqueIdentifier;
+    }
+
     @Override
     public String toString() {
         return "SearchCommandResponse{" +

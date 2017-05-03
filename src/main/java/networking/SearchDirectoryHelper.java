@@ -35,7 +35,7 @@ public class SearchDirectoryHelper {
             });
 
             for (File add : array) {
-                files.add(new FoundFile(add.getName(), checksum(add)));
+                files.add(new FoundFile(add.getName(), checksum(add), add.length()));
             }
         }
 

@@ -6,12 +6,14 @@ public class FoundFile {
 
     public String fileName;
     public byte[] checksum;
+    public long length;
 
     public FoundFile() {}
 
-    public FoundFile(String name, byte[] checksum) {
+    public FoundFile(String name, byte[] checksum, long length) {
         this.fileName = name;
         this.checksum = checksum;
+        this.length = length;
     }
 
     @Override
