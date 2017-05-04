@@ -8,6 +8,8 @@ import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.scene.layout.GridPane;
+import networking.Host;
+import networking.MessageHandler;
 import networking.SearchResultHelper;
 import networking.protocol.NetworkMapRequest;
 import networking.protocol.SearchCommandRequest;
@@ -16,6 +18,7 @@ import org.controlsfx.control.StatusBar;
 
 import java.io.IOException;
 import java.net.URL;
+import java.util.Optional;
 import java.util.ResourceBundle;
 
 import static networking.NetworkMap.NETWORK_MAP;
@@ -71,12 +74,53 @@ public class UIWindow extends GridPane implements Initializable {
     public void initialize(URL location, ResourceBundle resources) {
         searchButton.setOnAction((ae) -> startSearch());
         refreshNetworkButton.setOnAction((ae) -> refreshNetworks());
+        connectPeerButton.setOnAction((ae) -> connectPeer());
 
         hostColumn.setCellValueFactory(new PropertyValueFactory<>("provider"));
         fileNameColumn.setCellValueFactory(new PropertyValueFactory<>("fileName"));
         sizeColumn.setCellValueFactory(new PropertyValueFactory<>("length"));
 
         viewPeersButton.setOnAction((ae) -> tableView.refresh());
+    }
+
+    private void connectPeer() {
+        TextInputDialog dialog = new TextInputDialog("");
+        dialog.setTitle("Connect to Peer");
+        dialog.setHeaderText("Enter Peer's Hostname and Port");
+        dialog.setContentText("In the format of <hostname/ip>:<port>");
+
+
+        Optional<String> result = dialog.showAndWait();
+
+        if(result.isPresent()) {
+            String input = result.get();
+
+            String[] args = input.split(":");
+            if(args.length != 2) {
+                showInvalidInput("Peer input was not valid");
+            } else {
+                try {
+                    String hostname = args[0];
+                    int port = Integer.parseInt(args[1]);
+
+                    Host host = new Host(hostname,port);
+
+                    MessageHandler handler = new MessageHandler(host);
+                    handler.identify();
+                } catch (NumberFormatException e) {
+                    showInvalidInput("Port was in an invalid format.");
+                } catch (IOException e) {
+                    showInvalidInput("Unable to connect to peer with given input.");
+                }
+            }
+        }
+    }
+
+    private void showInvalidInput(String message) {
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setTitle("Invalid Input");
+        alert.setHeaderText(message);
+        alert.showAndWait();
     }
 
     private void refreshNetworks() {
