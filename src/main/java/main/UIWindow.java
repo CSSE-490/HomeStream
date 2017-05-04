@@ -10,6 +10,7 @@ import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.scene.layout.GridPane;
 import javafx.stage.DirectoryChooser;
 import networking.SearchResultHelper;
+import networking.protocol.NetworkMapRequest;
 import networking.protocol.SearchCommandRequest;
 import networking.protocol.SearchCommandResponse;
 import org.controlsfx.control.StatusBar;
@@ -72,6 +73,7 @@ public class UIWindow extends GridPane implements Initializable {
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         searchButton.setOnAction((ae) -> startSearch());
+        refreshNetworkButton.setOnAction((ae) -> refreshNetworks());
 
         hostColumn.setCellValueFactory(new PropertyValueFactory<>("provider"));
         fileNameColumn.setCellValueFactory(new PropertyValueFactory<>("fileName"));
@@ -93,6 +95,10 @@ public class UIWindow extends GridPane implements Initializable {
             SETTINGS.searchableDirectories.add(newSearchDirectory);
         else
             System.err.println("Does not exist or is not a directory");
+    }
+
+    private void refreshNetworks() {
+        NETWORK_MAP.broadcast(new NetworkMapRequest());
     }
 
     private void startSearch() {
