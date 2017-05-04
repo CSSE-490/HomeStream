@@ -9,6 +9,7 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.scene.layout.GridPane;
 import networking.SearchResultHelper;
+import networking.protocol.NetworkMapRequest;
 import networking.protocol.SearchCommandRequest;
 import networking.protocol.SearchCommandResponse;
 import org.controlsfx.control.StatusBar;
@@ -69,12 +70,17 @@ public class UIWindow extends GridPane implements Initializable {
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         searchButton.setOnAction((ae) -> startSearch());
+        refreshNetworkButton.setOnAction((ae) -> refreshNetworks());
 
         hostColumn.setCellValueFactory(new PropertyValueFactory<>("provider"));
         fileNameColumn.setCellValueFactory(new PropertyValueFactory<>("fileName"));
         sizeColumn.setCellValueFactory(new PropertyValueFactory<>("length"));
 
         viewPeersButton.setOnAction((ae) -> tableView.refresh());
+    }
+
+    private void refreshNetworks() {
+        NETWORK_MAP.broadcast(new NetworkMapRequest());
     }
 
     private void startSearch() {
