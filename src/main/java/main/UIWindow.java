@@ -6,21 +6,22 @@ import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
-import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.scene.layout.GridPane;
+import javafx.stage.DirectoryChooser;
 import networking.Host;
 import networking.MessageHandler;
 import networking.SearchResultHelper;
 import networking.protocol.NetworkMapRequest;
 import networking.protocol.SearchCommandRequest;
-import networking.protocol.SearchCommandResponse;
 import org.controlsfx.control.StatusBar;
 
+import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.util.Optional;
 import java.util.ResourceBundle;
 
+import static main.Settings.SETTINGS;
 import static networking.NetworkMap.NETWORK_MAP;
 import static networking.SearchResultHelper.FileSearchResult;
 
@@ -80,7 +81,20 @@ public class UIWindow extends GridPane implements Initializable {
         fileNameColumn.setCellValueFactory(new PropertyValueFactory<>("fileName"));
         sizeColumn.setCellValueFactory(new PropertyValueFactory<>("length"));
 
-        viewPeersButton.setOnAction((ae) -> tableView.refresh());
+        addFolderButton.setOnAction((ae) -> addSearchFolder());
+    }
+
+    private void addSearchFolder() {
+        DirectoryChooser chooser = new DirectoryChooser();
+        File userHome = new File(System.getProperty("user.home"));
+        chooser.setInitialDirectory(userHome);
+
+        File newSearchDirectory = chooser.showDialog(this.getScene().getWindow());
+
+        if(newSearchDirectory.exists() && newSearchDirectory.isDirectory())
+            SETTINGS.searchableDirectories.add(newSearchDirectory);
+        else
+            System.err.println("Does not exist or is not a directory");
     }
 
     private void connectPeer() {
