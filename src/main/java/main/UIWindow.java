@@ -81,6 +81,7 @@ public class UIWindow extends GridPane implements Initializable {
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         searchButton.setOnAction((ae) -> startSearch());
+        searchTextField.setOnAction((ae) -> startSearch());
         refreshNetworkButton.setOnAction((ae) -> refreshNetworks());
         connectPeerButton.setOnAction((ae) -> connectPeer());
         NETWORK_MAP.bindCount(statusBar);
