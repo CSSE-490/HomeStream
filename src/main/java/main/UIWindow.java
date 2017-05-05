@@ -1,13 +1,18 @@
 package main;
 
 import com.sun.jna.platform.win32.Guid;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.GridPane;
 import javafx.stage.DirectoryChooser;
+import javafx.stage.Stage;
+import javafx.stage.Window;
 import networking.Host;
 import networking.MessageHandler;
 import networking.SearchResultHelper;
@@ -20,6 +25,7 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.Optional;
 import java.util.ResourceBundle;
+import java.util.Set;
 
 import static main.Settings.SETTINGS;
 import static networking.NetworkMap.NETWORK_MAP;
@@ -77,14 +83,80 @@ public class UIWindow extends GridPane implements Initializable {
         searchButton.setOnAction((ae) -> startSearch());
         refreshNetworkButton.setOnAction((ae) -> refreshNetworks());
         connectPeerButton.setOnAction((ae) -> connectPeer());
+        NETWORK_MAP.bindCount(statusBar);
+
 
         hostColumn.setCellValueFactory(new PropertyValueFactory<>("provider"));
         fileNameColumn.setCellValueFactory(new PropertyValueFactory<>("fileName"));
         sizeColumn.setCellValueFactory(new PropertyValueFactory<>("length"));
 
         addFolderButton.setOnAction((ae) -> addSearchFolder());
+        viewFoldersButton.setOnAction((ae) -> viewSearchFolders());
+        viewPeersButton.setOnAction((ae) -> viewPeers());
+    }
 
-        NETWORK_MAP.bindCount(statusBar);
+    private void viewPeers() {
+        ListView<String> peersList = new ListView();
+        peersList.setPrefSize(250, 400);
+        Set<Host> hosts = NETWORK_MAP.getHostSet();
+
+        ObservableList<String> data = FXCollections.observableArrayList();
+        for (Host h : hosts) {
+            data.add(h.toString());
+        }
+
+        peersList.setItems(data);
+        Scene scene = new Scene(peersList);
+        Stage newStage = new Stage();
+        newStage.setScene(scene);
+        newStage.setTitle("Peers List");
+        newStage.show();
+
+        Window parent = this.getScene().getWindow();
+        double x = parent.getX();
+        double y = parent.getY();
+
+        double xSize = parent.getWidth();
+        double ySize = parent.getHeight();
+
+        double centerX = x + xSize / 2;
+        double centerY = y + ySize / 2;
+
+        double childX = newStage.getWidth();
+        double childY = newStage.getHeight();
+
+        newStage.setX(centerX - childX / 2);
+        newStage.setY(centerY - childY / 2);
+    }
+
+    private void viewSearchFolders() {
+        FolderListView foldersView = new FolderListView(SETTINGS.searchableDirectories);
+        Scene scene = new Scene(foldersView);
+        Stage newStage = new Stage();
+        newStage.initOwner(this.getScene().getWindow());
+        newStage.setScene(scene);
+        newStage.setResizable(true);
+        newStage.setTitle("Searchable Folders");
+        newStage.show();
+
+        newStage.setMinHeight(scene.getHeight());
+        newStage.setMinWidth(scene.getWidth());
+
+        Window parent = this.getScene().getWindow();
+        double x = parent.getX();
+        double y = parent.getY();
+
+        double xSize = parent.getWidth();
+        double ySize = parent.getHeight();
+
+        double centerX = x + xSize / 2;
+        double centerY = y + ySize / 2;
+
+        double childX = newStage.getWidth();
+        double childY = newStage.getHeight();
+
+        newStage.setX(centerX - childX / 2);
+        newStage.setY(centerY - childY / 2);
     }
 
     private void addSearchFolder() {
@@ -94,7 +166,7 @@ public class UIWindow extends GridPane implements Initializable {
 
         File newSearchDirectory = chooser.showDialog(this.getScene().getWindow());
 
-        if(newSearchDirectory.exists() && newSearchDirectory.isDirectory())
+        if (newSearchDirectory.exists() && newSearchDirectory.isDirectory())
             SETTINGS.searchableDirectories.add(newSearchDirectory);
         else
             System.err.println("Does not exist or is not a directory");
@@ -109,18 +181,18 @@ public class UIWindow extends GridPane implements Initializable {
 
         Optional<String> result = dialog.showAndWait();
 
-        if(result.isPresent()) {
+        if (result.isPresent()) {
             String input = result.get();
 
             String[] args = input.split(":");
-            if(args.length != 2) {
+            if (args.length != 2) {
                 showInvalidInput("Peer input was not valid");
             } else {
                 try {
                     String hostname = args[0];
                     int port = Integer.parseInt(args[1]);
 
-                    Host host = new Host(hostname,port);
+                    Host host = new Host(hostname, port);
 
                     MessageHandler handler = new MessageHandler(host);
                     handler.identify();
