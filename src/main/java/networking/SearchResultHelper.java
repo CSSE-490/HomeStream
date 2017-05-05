@@ -1,13 +1,18 @@
 package networking;
 
+import com.sun.glass.ui.Application;
 import com.sun.javafx.collections.ObservableListWrapper;
 import com.sun.jna.platform.win32.Guid;
+import javafx.collections.ListChangeListener;
 import networking.protocol.FoundFile;
 import networking.protocol.SearchCommandResponse;
+import org.controlsfx.control.StatusBar;
 
 import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.Map;
+
+import static networking.NetworkMap.NETWORK_MAP;
 
 public class SearchResultHelper {
 
@@ -18,6 +23,9 @@ public class SearchResultHelper {
         responses = new Hashtable<>();
         responsedHosts = new Hashtable<>();
     }
+
+    private static ListChangeListener<Host> hostListener;
+    private static Guid.GUID previousGuid;
 
     public synchronized static void searchResultReceived(SearchCommandResponse response) {
         verifyMap(response.uniqueIdentifier);
@@ -55,6 +63,31 @@ public class SearchResultHelper {
         verifyMap(guid);
 
         return responses.get(guid);
+    }
+
+    public synchronized static void bindSearchResults(final Guid.GUID guid, final StatusBar statusBar) {
+        if(previousGuid != null) {
+            responsedHosts.get(previousGuid).removeListener(hostListener);
+        }
+
+        final int currentHostCount = NETWORK_MAP.getHostSet().size();
+
+        hostListener = new ListChangeListener<Host>() {
+            int hostResponded = 0;
+
+            @Override
+            public void onChanged(Change<? extends Host> c) {
+                hostResponded++;
+                if(hostResponded == currentHostCount) {
+                    Application.invokeAndWait(() -> statusBar.setText("Search Complete"));
+                }
+                Application.invokeAndWait(() -> statusBar.setProgress(hostResponded / (double)currentHostCount));
+            }
+        };
+
+        Application.invokeAndWait(() -> statusBar.setText("Searching ..."));
+        verifyHostMap(guid);
+        responsedHosts.get(guid).addListener(hostListener);
     }
 
     public static class FileSearchResult {

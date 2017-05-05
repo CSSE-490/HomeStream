@@ -64,7 +64,7 @@ public class Startup {
                         handler.identify();
                         break;
                     case "hosts":
-                        System.out.println(Arrays.toString(NETWORK_MAP.hostMap.keySet().toArray()));
+                        System.out.println(Arrays.toString(NETWORK_MAP.getHostSet().toArray()));
                         break;
                     case "exit":
                         System.out.println("Goodbye!");

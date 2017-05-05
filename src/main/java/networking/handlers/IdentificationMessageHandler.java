@@ -17,11 +17,12 @@ public class IdentificationMessageHandler implements IMessageEventHandler {
     public void handleMessageEvent(IMessage message, MessageHandler messageHandler) {
         if (message instanceof IdentificationReceive) {
             NetworkMap.NETWORK_MAP.addHostToMap(((IdentificationReceive) message).host, messageHandler);
+            messageHandler.host = ((IdentificationReceive) message).host;
             messageHandler.sendMessage(new NetworkMapRequest());
         } else if (message instanceof IdentificationSend) {
+            messageHandler.host = ((IdentificationSend) message).host;
             messageHandler.sendMessage(new IdentificationReceive(Server.host));
             NetworkMap.NETWORK_MAP.addHostToMap(((IdentificationSend) message).host, messageHandler);
-            messageHandler.host = ((IdentificationSend) message).host;
         }
     }
 }

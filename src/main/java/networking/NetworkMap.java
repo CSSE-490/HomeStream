@@ -1,22 +1,49 @@
 package networking;
 
+import javafx.beans.property.StringProperty;
+import javafx.scene.text.Text;
 import networking.protocol.IMessage;
+import org.controlsfx.control.StatusBar;
 
-import java.util.Hashtable;
+import java.net.Inet4Address;
+import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
-/**
- * Created by Jesse Shellabarger on 4/26/2017.
- */
 public enum NetworkMap {
     NETWORK_MAP;
 
-    public Map<Host, MessageHandler> hostMap = new Hashtable<>();
+    private Map<Host, MessageHandler> hostMap = new HashMap<>();
+    private StringProperty hostCount;
 
-    public void addHostToMap(Host host, MessageHandler handler) {
+    public synchronized void addHostToMap(Host host, MessageHandler handler) {
         hostMap.put(host, handler);
+        updateCount();
     }
 
+    public synchronized void removeHostFromMap(Host host) {
+        hostMap.remove(host);
+        updateCount();
+    }
+
+    public Set<Host> getHostSet() {
+        return hostMap.keySet();
+    }
+
+    private synchronized void updateCount() {
+        System.out.println("Updating Called");
+        if(hostCount != null) {
+            System.out.println("Updating Text");
+            hostCount.set(String.valueOf(hostMap.size()));
+        }
+    }
+
+    public void bindCount(StatusBar bar) {
+        Text hostText = new Text("0");
+        bar.getLeftItems().add(hostText);
+        hostCount = hostText.textProperty();
+
+    }
 
     public void broadcast(IMessage message) {
         synchronized (hostMap) {

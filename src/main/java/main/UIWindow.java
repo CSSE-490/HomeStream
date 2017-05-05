@@ -3,7 +3,6 @@ package main;
 import com.sun.jna.platform.win32.Guid;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
@@ -15,12 +14,10 @@ import javafx.scene.layout.GridPane;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.Stage;
 import javafx.stage.Window;
-import javafx.stage.WindowEvent;
 import networking.Host;
 import networking.MessageHandler;
 import networking.SearchResultHelper;
 import networking.protocol.NetworkMapRequest;
-import networking.protocol.PartialFileRequest;
 import networking.protocol.SearchCommandRequest;
 import org.controlsfx.control.StatusBar;
 
@@ -32,6 +29,7 @@ import java.util.*;
 import static main.Settings.SETTINGS;
 import static networking.NetworkMap.NETWORK_MAP;
 import static networking.SearchResultHelper.FileSearchResult;
+import static networking.SearchResultHelper.bindSearchResults;
 
 public class UIWindow extends GridPane implements Initializable {
 
@@ -82,8 +80,11 @@ public class UIWindow extends GridPane implements Initializable {
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         searchButton.setOnAction((ae) -> startSearch());
+        searchTextField.setOnAction((ae) -> startSearch());
         refreshNetworkButton.setOnAction((ae) -> refreshNetworks());
         connectPeerButton.setOnAction((ae) -> connectPeer());
+        NETWORK_MAP.bindCount(statusBar);
+
 
         hostColumn.setCellValueFactory(new PropertyValueFactory<>("provider"));
         fileNameColumn.setCellValueFactory(new PropertyValueFactory<>("fileName"));
@@ -97,7 +98,7 @@ public class UIWindow extends GridPane implements Initializable {
     private void viewPeers() {
         ListView<String> peersList = new ListView();
         peersList.setPrefSize(250, 400);
-        Set<Host> hosts = NETWORK_MAP.hostMap.keySet();
+        Set<Host> hosts = NETWORK_MAP.getHostSet();
 
         ObservableList<String> data = FXCollections.observableArrayList();
         for (Host h : hosts) {
@@ -228,6 +229,7 @@ public class UIWindow extends GridPane implements Initializable {
 
         Guid.GUID guid = Guid.GUID.newGuid();
         SearchCommandRequest request = new SearchCommandRequest(text, guid);
+        bindSearchResults(guid, statusBar);
         NETWORK_MAP.broadcast(request);
 
         this.tableView.setItems(SearchResultHelper.getSearchResultsForGUID(guid));
