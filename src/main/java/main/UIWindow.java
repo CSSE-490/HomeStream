@@ -1,6 +1,8 @@
 package main;
 
 import com.sun.jna.platform.win32.Guid;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -17,6 +19,7 @@ import networking.Host;
 import networking.MessageHandler;
 import networking.SearchResultHelper;
 import networking.protocol.NetworkMapRequest;
+import networking.protocol.PartialFileRequest;
 import networking.protocol.SearchCommandRequest;
 import org.controlsfx.control.StatusBar;
 
@@ -25,6 +28,7 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.Optional;
 import java.util.ResourceBundle;
+import java.util.Set;
 
 import static main.Settings.SETTINGS;
 import static networking.NetworkMap.NETWORK_MAP;
@@ -87,8 +91,42 @@ public class UIWindow extends GridPane implements Initializable {
         sizeColumn.setCellValueFactory(new PropertyValueFactory<>("length"));
 
         addFolderButton.setOnAction((ae) -> addSearchFolder());
-
         viewFoldersButton.setOnAction((ae) -> viewSearchFolders());
+        viewPeersButton.setOnAction((ae) -> viewPeers());
+    }
+
+    private void viewPeers() {
+        ListView<String> peersList = new ListView();
+        peersList.setPrefSize(250, 400);
+        Set<Host> hosts = NETWORK_MAP.hostMap.keySet();
+
+        ObservableList<String> data = FXCollections.observableArrayList();
+        for (Host h : hosts) {
+            data.add(h.toString());
+        }
+
+        peersList.setItems(data);
+        Scene scene = new Scene(peersList);
+        Stage newStage = new Stage();
+        newStage.setScene(scene);
+        newStage.setTitle("Peers List");
+        newStage.show();
+
+        Window parent = this.getScene().getWindow();
+        double x = parent.getX();
+        double y = parent.getY();
+
+        double xSize = parent.getWidth();
+        double ySize = parent.getHeight();
+
+        double centerX = x + xSize / 2;
+        double centerY = y + ySize / 2;
+
+        double childX = newStage.getWidth();
+        double childY = newStage.getHeight();
+
+        newStage.setX(centerX - childX / 2);
+        newStage.setY(centerY - childY / 2);
     }
 
     private void viewSearchFolders() {
