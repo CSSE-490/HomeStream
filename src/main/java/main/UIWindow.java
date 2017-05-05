@@ -167,7 +167,7 @@ public class UIWindow extends GridPane implements Initializable {
 
         File newSearchDirectory = chooser.showDialog(this.getScene().getWindow());
 
-        if (newSearchDirectory.exists() && newSearchDirectory.isDirectory())
+        if (newSearchDirectory != null && newSearchDirectory.exists() && newSearchDirectory.isDirectory())
             SETTINGS.searchableDirectories.add(newSearchDirectory);
         else
             System.err.println("Does not exist or is not a directory");
