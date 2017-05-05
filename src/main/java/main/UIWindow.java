@@ -24,6 +24,7 @@ import java.util.ResourceBundle;
 import static main.Settings.SETTINGS;
 import static networking.NetworkMap.NETWORK_MAP;
 import static networking.SearchResultHelper.FileSearchResult;
+import static networking.SearchResultHelper.bindSearchResults;
 
 public class UIWindow extends GridPane implements Initializable {
 
@@ -82,6 +83,8 @@ public class UIWindow extends GridPane implements Initializable {
         sizeColumn.setCellValueFactory(new PropertyValueFactory<>("length"));
 
         addFolderButton.setOnAction((ae) -> addSearchFolder());
+
+        NETWORK_MAP.bindCount(statusBar);
     }
 
     private void addSearchFolder() {
@@ -146,6 +149,7 @@ public class UIWindow extends GridPane implements Initializable {
 
         Guid.GUID guid = Guid.GUID.newGuid();
         SearchCommandRequest request = new SearchCommandRequest(text, guid);
+        bindSearchResults(guid, statusBar);
         NETWORK_MAP.broadcast(request);
 
         this.tableView.setItems(SearchResultHelper.getSearchResultsForGUID(guid));

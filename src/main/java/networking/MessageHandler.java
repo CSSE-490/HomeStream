@@ -78,8 +78,7 @@ public class MessageHandler extends Thread {
                 }
 
             } catch (IOException e) {
-                e.printStackTrace();
-                NetworkMap.NETWORK_MAP.hostMap.remove(this.host);
+                NetworkMap.NETWORK_MAP.removeHostFromMap(this.host);
                 System.out.println("Node " + host.toString() + " disconnected. Closing connection.");
                 networkUpdater.cancel(true);
                 try {
@@ -90,13 +89,12 @@ public class MessageHandler extends Thread {
         }
     }
 
-
-
     public void registerForMessageEvent(IMessageEventHandler e) {
         this.observers.add(e);
     }
 
     public void sendMessage(IMessage message) {
+        System.out.printf("Sending message of type %s to %s%n", message.getClass(), host);
         String jsonMessage = this.gson.toJson(message, IMessage.class);
         try {
             bufferedWriter.write(jsonMessage);
