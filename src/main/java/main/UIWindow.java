@@ -10,6 +10,7 @@ import javafx.fxml.Initializable;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.input.KeyCode;
 import javafx.scene.layout.GridPane;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.Stage;
@@ -26,9 +27,7 @@ import org.controlsfx.control.StatusBar;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
-import java.util.Optional;
-import java.util.ResourceBundle;
-import java.util.Set;
+import java.util.*;
 
 import static main.Settings.SETTINGS;
 import static networking.NetworkMap.NETWORK_MAP;
@@ -112,26 +111,33 @@ public class UIWindow extends GridPane implements Initializable {
         newStage.setTitle("Peers List");
         newStage.show();
 
-        Window parent = this.getScene().getWindow();
-        double x = parent.getX();
-        double y = parent.getY();
-
-        double xSize = parent.getWidth();
-        double ySize = parent.getHeight();
-
-        double centerX = x + xSize / 2;
-        double centerY = y + ySize / 2;
-
-        double childX = newStage.getWidth();
-        double childY = newStage.getHeight();
-
-        newStage.setX(centerX - childX / 2);
-        newStage.setY(centerY - childY / 2);
+        centerStage(newStage);
     }
 
     private void viewSearchFolders() {
-        FolderListView foldersView = new FolderListView(SETTINGS.searchableDirectories);
-        Scene scene = new Scene(foldersView);
+        List<File> directories = SETTINGS.searchableDirectories;
+        ObservableList<String> directoryNames = FXCollections.observableArrayList();
+
+        ListView<String> folders = new ListView();
+        folders.setPrefSize(250, 400);
+        for (File f : directories) {
+            directoryNames.add(f.getPath());
+        }
+        folders.setItems(directoryNames);
+
+        folders.setOnKeyPressed(event -> {
+            if (event.getCode() == KeyCode.DELETE) {
+                String directoryName = folders.getSelectionModel().getSelectedItem();
+                for (File directory : directories) {
+                    if(directoryName.equals(directory.getPath())) {
+                        directoryNames.remove(directory.getPath());
+                        Settings.SETTINGS.searchableDirectories.remove(directory);
+                    }
+                }
+            }
+        });
+
+        Scene scene = new Scene(folders);
         Stage newStage = new Stage();
         newStage.initOwner(this.getScene().getWindow());
         newStage.setScene(scene);
@@ -139,9 +145,10 @@ public class UIWindow extends GridPane implements Initializable {
         newStage.setTitle("Searchable Folders");
         newStage.show();
 
-        newStage.setMinHeight(scene.getHeight());
-        newStage.setMinWidth(scene.getWidth());
+        centerStage(newStage);
+    }
 
+    private void centerStage(Stage newStage) {
         Window parent = this.getScene().getWindow();
         double x = parent.getX();
         double y = parent.getY();
@@ -157,7 +164,6 @@ public class UIWindow extends GridPane implements Initializable {
 
         newStage.setX(centerX - childX / 2);
         newStage.setY(centerY - childY / 2);
-
     }
 
     private void addSearchFolder() {
