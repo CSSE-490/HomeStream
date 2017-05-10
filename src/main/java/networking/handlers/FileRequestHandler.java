@@ -4,9 +4,9 @@ import networking.MessageHandler;
 import networking.protocol.IMessage;
 
 /**
- * Created by Jesse Shellabarger on 4/26/2017.
+ * Created by Jesse Shellabarger on 5/10/2017.
  */
-public class PartialFileHandler implements IMessageEventHandler {
+public class FileRequestHandler implements IMessageEventHandler {
 
     @Override
     public void handleMessageEvent(IMessage message, MessageHandler messageHandler) {
