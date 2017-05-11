@@ -12,14 +12,12 @@ import util.GUIDSerializer;
 
 import java.io.*;
 import java.net.Socket;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
-public class MessageHandler extends Thread {
+public class ClientHandler extends Thread {
 
     private final Socket socket;
     private final BufferedWriter bufferedWriter;
@@ -29,17 +27,17 @@ public class MessageHandler extends Thread {
     public Host host;
     private ScheduledFuture<?> networkUpdater;
 
-    public MessageHandler(Host host) throws IOException {
+    public ClientHandler(Host host) throws IOException {
         this(new Socket(host.hostname, host.port), host);
     }
 
-    public MessageHandler(Socket socket, Host host) throws IOException {
+    public ClientHandler(Socket socket, Host host) throws IOException {
         this.socket = socket;
         this.host = host;
         this.run = true;
 
         final RuntimeTypeAdapterFactory<IMessage> typeFactory = RuntimeTypeAdapterFactory.of(IMessage.class, "type")
-                .registerSubtype(PartialFileRequest.class)
+                .registerSubtype(FileRequest.class)
                 .registerSubtype(SearchCommandRequest.class)
                 .registerSubtype(SearchCommandResponse.class)
                 .registerSubtype(NetworkMapRequest.class)

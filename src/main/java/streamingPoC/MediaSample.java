@@ -10,14 +10,12 @@ import javafx.stage.Stage;
 import uk.co.caprica.vlcj.binding.LibVlc;
 import uk.co.caprica.vlcj.component.EmbeddedMediaPlayerComponent;
 import uk.co.caprica.vlcj.discovery.NativeDiscovery;
+import uk.co.caprica.vlcj.player.media.callback.nonseekable.FileInputStreamMedia;
 import uk.co.caprica.vlcj.player.media.callback.seekable.RandomAccessFileMedia;
 
 import javax.swing.*;
 import java.io.File;
 
-/**
- * Created by CJ on 3/31/2017.
- */
 public class MediaSample extends Application {
     public static void main(String[] args) {
         launch(args);
@@ -37,6 +35,6 @@ public class MediaSample extends Application {
         frame.setContentPane(mediaPlayerComponent);
         frame.setVisible(true);
 
-        mediaPlayerComponent.getMediaPlayer().playMedia(new RandomAccessFileMedia(new File("F:\\Recordings\\WoW\\Raid\\2016-10-13 20-33-59.flv"), 1024*1024));
+        mediaPlayerComponent.getMediaPlayer().playMedia(new FileInputStreamMedia(new File("F:\\Recordings\\WoW\\Raid\\2016-10-13 20-33-59.flv"), 1024*1024));
     }
 }

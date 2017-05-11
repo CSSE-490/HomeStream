@@ -1,9 +1,9 @@
 package main;
 
 import com.sun.jna.platform.win32.Guid;
+import networking.FileServer;
 import networking.Host;
-import networking.MessageHandler;
-import networking.NetworkMap;
+import networking.ClientHandler;
 import networking.Server;
 import networking.protocol.SearchCommandRequest;
 
@@ -21,6 +21,8 @@ public class Startup {
     public static void main(String[] args) throws IOException {
         int localPort = Integer.parseInt(args[0]);
         new Server(localPort).start();
+        new FileServer(localPort+100).start();
+
 
         String localDirectory = args[1];
 
@@ -31,7 +33,7 @@ public class Startup {
         if (args.length >= 3) {
             String networkHost = args[2];
             Host host = new Host(networkHost);
-            MessageHandler handler = new MessageHandler(host);
+            ClientHandler handler = new ClientHandler(host);
             handler.identify();
         }
 
@@ -60,7 +62,7 @@ public class Startup {
                         System.out.println("Please enter the hostname:port of an existing node of the network");
                         String hostname = reader.readLine();
                         String[] args = hostname.split(":");
-                        MessageHandler handler = new MessageHandler(new Host(args[0], Integer.parseInt(args[1])));
+                        ClientHandler handler = new ClientHandler(new Host(args[0], Integer.parseInt(args[1])));
                         handler.identify();
                         break;
                     case "hosts":

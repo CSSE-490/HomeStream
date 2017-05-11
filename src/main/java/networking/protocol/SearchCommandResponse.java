@@ -9,27 +9,15 @@ import java.util.List;
 
 public class SearchCommandResponse implements IMessage {
     public List<FoundFile> files;
+    public Host responder;
     public Host provider;
     public Guid.GUID uniqueIdentifier;
 
-    public SearchCommandResponse() {}
-
-    public SearchCommandResponse(List<FoundFile> files, Host host, Guid.GUID uniqueIdentifier) {
+    public SearchCommandResponse(List<FoundFile> files, Host responder, Host provider, Guid.GUID uniqueIdentifier) {
         this.files = files;
-        this.provider = host;
+        this.responder = responder;
+        this.provider = provider;
         this.uniqueIdentifier = uniqueIdentifier;
-    }
-
-    public List<FoundFile> getFiles() {
-        return files;
-    }
-
-    public Host getProvider() {
-        return provider;
-    }
-
-    public Guid.GUID getUniqueIdentifier() {
-        return uniqueIdentifier;
     }
 
     @Override

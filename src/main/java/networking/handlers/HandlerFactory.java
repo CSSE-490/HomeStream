@@ -14,7 +14,6 @@ public class HandlerFactory {
        defaultHandlers = new ArrayList<>();
        defaultHandlers.add(new IdentificationMessageHandler());
        defaultHandlers.add(new NetworkMapHandler());
-       defaultHandlers.add(new FileRequestHandler());
        defaultHandlers.add(new SearchCommandHandler());
     }
 

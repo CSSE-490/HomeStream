@@ -23,10 +23,11 @@
       <RowConstraints maxHeight="50.0" vgrow="NEVER" />
     <RowConstraints vgrow="NEVER" />
     <RowConstraints maxHeight="1.7976931348623157E308" vgrow="SOMETIMES" />
+      <RowConstraints maxHeight="30.0" minHeight="30.0" prefHeight="30.0" vgrow="NEVER" />
     <RowConstraints vgrow="NEVER" />
   </rowConstraints>
    <children>
-      <VBox maxHeight="1.7976931348623157E308" spacing="5.0" GridPane.rowIndex="2">
+      <VBox maxHeight="1.7976931348623157E308" spacing="5.0" GridPane.rowIndex="2" GridPane.rowSpan="2">
          <children>
             <Button fx:id="connectPeerButton" mnemonicParsing="false" text="Connect to Peer" />
             <Button fx:id="refreshNetworkButton" mnemonicParsing="false" text="Refresh Network" />
@@ -60,7 +61,7 @@
             <Button fx:id="searchButton" mnemonicParsing="false" text="Search" GridPane.columnIndex="1" />
          </children>
       </GridPane>
-      <StatusBar fx:id="statusBar" maxHeight="30.0" prefHeight="30.0" GridPane.columnSpan="2" GridPane.rowIndex="3" />
+      <StatusBar fx:id="statusBar" maxHeight="30.0" prefHeight="30.0" GridPane.columnSpan="2" GridPane.rowIndex="4" />
       <TableView fx:id="tableView" prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="2">
         <columns>
           <TableColumn fx:id="hostColumn" prefWidth="75.0" text="Host" />
@@ -68,5 +69,6 @@
             <TableColumn fx:id="sizeColumn" prefWidth="75.0" text="Size" />
         </columns>
       </TableView>
+      <Button fx:id="getItButton" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" mnemonicParsing="false" text="GET IT" GridPane.columnIndex="1" GridPane.rowIndex="3" />
    </children>
 </fx:root>

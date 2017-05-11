@@ -1,6 +1,6 @@
 package networking.handlers;
 
-import networking.MessageHandler;
+import networking.ClientHandler;
 import networking.protocol.IMessage;
 
 /**
@@ -8,5 +8,5 @@ import networking.protocol.IMessage;
  */
 public interface IMessageEventHandler {
 
-    void handleMessageEvent(IMessage message, MessageHandler messageHandler);
+    void handleMessageEvent(IMessage message, ClientHandler clientHandler);
 }

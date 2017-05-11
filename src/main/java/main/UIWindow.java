@@ -14,8 +14,9 @@ import javafx.scene.layout.GridPane;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.Stage;
 import javafx.stage.Window;
+import networking.FileReceiverClientHandler;
 import networking.Host;
-import networking.MessageHandler;
+import networking.ClientHandler;
 import networking.SearchResultHelper;
 import networking.protocol.NetworkMapRequest;
 import networking.protocol.SearchCommandRequest;
@@ -23,6 +24,7 @@ import org.controlsfx.control.StatusBar;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.Socket;
 import java.net.URL;
 import java.util.*;
 
@@ -57,6 +59,8 @@ public class UIWindow extends GridPane implements Initializable {
     private Button searchButton;
     @FXML
     private StatusBar statusBar;
+    @FXML
+    private Button getItButton;
 
     public UIWindow() {
         try {
@@ -93,6 +97,7 @@ public class UIWindow extends GridPane implements Initializable {
         addFolderButton.setOnAction((ae) -> addSearchFolder());
         viewFoldersButton.setOnAction((ae) -> viewSearchFolders());
         viewPeersButton.setOnAction((ae) -> viewPeers());
+        getItButton.setOnAction((ae) -> getIt());
     }
 
     private void viewPeers() {
@@ -202,7 +207,7 @@ public class UIWindow extends GridPane implements Initializable {
 
                     Host host = new Host(hostname, port);
 
-                    MessageHandler handler = new MessageHandler(host);
+                    ClientHandler handler = new ClientHandler(host);
                     handler.identify();
                 } catch (NumberFormatException e) {
                     showInvalidInput("Port was in an invalid format.");
@@ -233,5 +238,19 @@ public class UIWindow extends GridPane implements Initializable {
         NETWORK_MAP.broadcast(request);
 
         this.tableView.setItems(SearchResultHelper.getSearchResultsForGUID(guid));
+    }
+
+    public void getIt() {
+        FileSearchResult result = tableView.getSelectionModel().getSelectedItem();
+
+        if(result == null)
+            return;
+
+        try {
+            Socket socket = new Socket(result.provider.hostname, result.provider.port);
+            new FileReceiverClientHandler(socket, result).start();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }

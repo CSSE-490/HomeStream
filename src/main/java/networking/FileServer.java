@@ -6,37 +6,38 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.UnknownHostException;
 
-public class Server extends Thread {
+public class FileServer extends Thread {
     public static Host host;
-    private boolean run;
+    private ServerSocket socket;
+    private volatile boolean running;
 
-    public Server(int port) {
+    public FileServer(int port) {
         try {
             this.host = new Host(InetAddress.getLocalHost().getHostName(), port);
         } catch (UnknownHostException e) {
             e.printStackTrace();
         }
-        this.run = true;
+        this.running = true;
     }
 
     @Override
     public void run() {
-        ServerSocket serverSocket;
         try {
-            serverSocket = new ServerSocket(host.port);
+            socket = new ServerSocket(host.port);
         } catch (IOException e) {
+            System.err.println("Error when starting File Server");
             e.printStackTrace();
             return;
         }
-        while (run) {
+
+        while(running) {
             try {
-                Socket socket = serverSocket.accept();
-                System.out.println("Connection accepted from " + socket.getInetAddress().toString());
-                new ClientHandler(socket, null).start();
+                Socket client = socket.accept();
+                new FileSenderClientHandler(client).start();
             } catch (IOException e) {
+                System.out.println("Error when accepting client on File Server");
                 e.printStackTrace();
             }
-
         }
     }
 }

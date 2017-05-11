@@ -5,7 +5,6 @@ import javafx.scene.text.Text;
 import networking.protocol.IMessage;
 import org.controlsfx.control.StatusBar;
 
-import java.net.Inet4Address;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -13,10 +12,10 @@ import java.util.Set;
 public enum NetworkMap {
     NETWORK_MAP;
 
-    private Map<Host, MessageHandler> hostMap = new HashMap<>();
+    private Map<Host, ClientHandler> hostMap = new HashMap<>();
     private StringProperty hostCount;
 
-    public synchronized void addHostToMap(Host host, MessageHandler handler) {
+    public synchronized void addHostToMap(Host host, ClientHandler handler) {
         hostMap.put(host, handler);
         updateCount();
     }

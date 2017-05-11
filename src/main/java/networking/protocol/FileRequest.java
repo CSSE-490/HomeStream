@@ -7,5 +7,10 @@ public class FileRequest implements IMessage {
     public String fileName;
     public byte[] checksum;
 
+    public FileRequest(String fileName, byte[] checksum) {
+        this.fileName = fileName;
+        this.checksum = checksum;
+    }
+
     public FileRequest() {}
 }

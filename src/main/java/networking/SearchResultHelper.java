@@ -31,7 +31,7 @@ public class SearchResultHelper {
         verifyMap(response.uniqueIdentifier);
         verifyHostMap(response.uniqueIdentifier);
 
-        responsedHosts.get(response.uniqueIdentifier).add(response.provider);
+        responsedHosts.get(response.uniqueIdentifier).add(response.responder);
         try {
             for (FoundFile f : response.files) {
                 try {

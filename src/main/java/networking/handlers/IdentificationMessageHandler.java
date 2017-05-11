@@ -1,6 +1,6 @@
 package networking.handlers;
 
-import networking.MessageHandler;
+import networking.ClientHandler;
 import networking.NetworkMap;
 import networking.Server;
 import networking.protocol.IMessage;
@@ -14,15 +14,15 @@ import networking.protocol.NetworkMapRequest;
 public class IdentificationMessageHandler implements IMessageEventHandler {
 
     @Override
-    public void handleMessageEvent(IMessage message, MessageHandler messageHandler) {
+    public void handleMessageEvent(IMessage message, ClientHandler clientHandler) {
         if (message instanceof IdentificationReceive) {
-            NetworkMap.NETWORK_MAP.addHostToMap(((IdentificationReceive) message).host, messageHandler);
-            messageHandler.host = ((IdentificationReceive) message).host;
-            messageHandler.sendMessage(new NetworkMapRequest());
+            NetworkMap.NETWORK_MAP.addHostToMap(((IdentificationReceive) message).host, clientHandler);
+            clientHandler.host = ((IdentificationReceive) message).host;
+            clientHandler.sendMessage(new NetworkMapRequest());
         } else if (message instanceof IdentificationSend) {
-            messageHandler.host = ((IdentificationSend) message).host;
-            messageHandler.sendMessage(new IdentificationReceive(Server.host));
-            NetworkMap.NETWORK_MAP.addHostToMap(((IdentificationSend) message).host, messageHandler);
+            clientHandler.host = ((IdentificationSend) message).host;
+            clientHandler.sendMessage(new IdentificationReceive(Server.host));
+            NetworkMap.NETWORK_MAP.addHostToMap(((IdentificationSend) message).host, clientHandler);
         }
     }
 }
