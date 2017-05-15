@@ -36,7 +36,7 @@ public class Startup {
             ClientHandler handler = new ClientHandler(host);
             handler.identify();
         }
-
+        UI.startup();
         repl();
     }
 
@@ -90,9 +90,6 @@ public class Startup {
 
                         SearchCommandRequest request = new SearchCommandRequest(fileRegex, Guid.GUID.newGuid());
                         NETWORK_MAP.broadcast(request);
-                        break;
-                    case "ui":
-                        UI.startup();
                         break;
                     default:
                         System.err.println("Invalid command. Use the help command to view a list of available commands.");

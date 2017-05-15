@@ -12,6 +12,7 @@ public class UI extends Application {
 
     @Override
     public void start(Stage primaryStage) {
+        primaryStage.setTitle("Homeflix");
         Scene scene = new Scene(new UIWindow());
         primaryStage.setScene(scene);
 

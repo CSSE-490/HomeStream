@@ -1,8 +1,12 @@
 package main;
 
 import com.sun.jna.platform.win32.Guid;
+import javafx.beans.property.ReadOnlyObjectWrapper;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.concurrent.Task;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
@@ -21,12 +25,14 @@ import networking.SearchResultHelper;
 import networking.protocol.NetworkMapRequest;
 import networking.protocol.SearchCommandRequest;
 import org.controlsfx.control.StatusBar;
+import org.controlsfx.control.TaskProgressView;
 
 import java.io.File;
 import java.io.IOException;
 import java.net.Socket;
 import java.net.URL;
 import java.util.*;
+import java.util.concurrent.FutureTask;
 
 import static main.Settings.SETTINGS;
 import static networking.NetworkMap.NETWORK_MAP;
@@ -58,9 +64,11 @@ public class UIWindow extends GridPane implements Initializable {
     @FXML
     private Button searchButton;
     @FXML
-    private StatusBar statusBar;
-    @FXML
     private Button getItButton;
+    @FXML
+    private Label connectedPeers;
+    @FXML
+    private TaskProgressView taskProgressView;
 
     public UIWindow() {
         try {
@@ -87,17 +95,27 @@ public class UIWindow extends GridPane implements Initializable {
         searchTextField.setOnAction((ae) -> startSearch());
         refreshNetworkButton.setOnAction((ae) -> refreshNetworks());
         connectPeerButton.setOnAction((ae) -> connectPeer());
-        NETWORK_MAP.bindCount(statusBar);
+        NETWORK_MAP.bindCount(connectedPeers);
 
 
         hostColumn.setCellValueFactory(new PropertyValueFactory<>("provider"));
         fileNameColumn.setCellValueFactory(new PropertyValueFactory<>("fileName"));
-        sizeColumn.setCellValueFactory(new PropertyValueFactory<>("length"));
+        sizeColumn.setCellValueFactory((data) ->
+            new ReadOnlyObjectWrapper(humanReadableByteCount(data.getValue().length,false))
+        );
 
         addFolderButton.setOnAction((ae) -> addSearchFolder());
         viewFoldersButton.setOnAction((ae) -> viewSearchFolders());
         viewPeersButton.setOnAction((ae) -> viewPeers());
         getItButton.setOnAction((ae) -> getIt());
+    }
+
+    public static String humanReadableByteCount(long bytes, boolean si) {
+        int unit = si ? 1000 : 1024;
+        if (bytes < unit) return bytes + " B";
+        int exp = (int) (Math.log(bytes) / Math.log(unit));
+        String pre = (si ? "kMGTPE" : "KMGTPE").charAt(exp-1) + (si ? "" : "i");
+        return String.format("%.1f %sB", bytes / Math.pow(unit, exp), pre);
     }
 
     private void viewPeers() {
@@ -234,9 +252,12 @@ public class UIWindow extends GridPane implements Initializable {
 
         Guid.GUID guid = Guid.GUID.newGuid();
         SearchCommandRequest request = new SearchCommandRequest(text, guid);
-        bindSearchResults(guid, statusBar);
+        SearchTask task = new SearchTask(text,guid,NETWORK_MAP.getHostSet().size());
+        taskProgressView.getTasks().add(task);
+        Thread thread = new Thread(task);
+        thread.setDaemon(true);
+        thread.start();
         NETWORK_MAP.broadcast(request);
-
         this.tableView.setItems(SearchResultHelper.getSearchResultsForGUID(guid));
     }
 
@@ -248,7 +269,11 @@ public class UIWindow extends GridPane implements Initializable {
 
         try {
             Socket socket = new Socket(result.provider.hostname, result.provider.port);
-            new FileReceiverClientHandler(socket, result).start();
+            Task t = new FileReceiverClientHandler(socket, result);
+            taskProgressView.getTasks().add(t);
+            Thread thread = new Thread(t);
+            thread.setDaemon(true);
+            thread.start();
         } catch (IOException e) {
             e.printStackTrace();
         }

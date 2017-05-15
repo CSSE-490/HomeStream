@@ -3,10 +3,10 @@ package networking;
 import com.sun.glass.ui.Application;
 import com.sun.javafx.collections.ObservableListWrapper;
 import com.sun.jna.platform.win32.Guid;
+import javafx.beans.property.IntegerProperty;
 import javafx.collections.ListChangeListener;
 import networking.protocol.FoundFile;
 import networking.protocol.SearchCommandResponse;
-import org.controlsfx.control.StatusBar;
 
 import java.util.ArrayList;
 import java.util.Hashtable;
@@ -65,27 +65,19 @@ public class SearchResultHelper {
         return responses.get(guid);
     }
 
-    public synchronized static void bindSearchResults(final Guid.GUID guid, final StatusBar statusBar) {
-        if(previousGuid != null) {
-            responsedHosts.get(previousGuid).removeListener(hostListener);
-        }
-
-        final int currentHostCount = NETWORK_MAP.getHostSet().size();
-
+    public synchronized static void bindSearchResults(final Guid.GUID guid, final IntegerProperty integerProperty,final int hostSize) {
         hostListener = new ListChangeListener<Host>() {
             int hostResponded = 0;
 
             @Override
             public void onChanged(Change<? extends Host> c) {
                 hostResponded++;
-                if(hostResponded == currentHostCount) {
-                    Application.invokeAndWait(() -> statusBar.setText("Search Complete"));
-                }
-                Application.invokeAndWait(() -> statusBar.setProgress(hostResponded / (double)currentHostCount));
+                integerProperty.set(hostResponded);
+
+                if(hostResponded == hostSize)
+                    responsedHosts.get(guid).removeListener(this);
             }
         };
-
-        Application.invokeAndWait(() -> statusBar.setText("Searching ..."));
         verifyHostMap(guid);
         responsedHosts.get(guid).addListener(hostListener);
     }

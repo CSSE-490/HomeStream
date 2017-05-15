@@ -1,6 +1,8 @@
 package networking;
 
+import com.sun.glass.ui.Application;
 import javafx.beans.property.StringProperty;
+import javafx.scene.control.Label;
 import javafx.scene.text.Text;
 import networking.protocol.IMessage;
 import org.controlsfx.control.StatusBar;
@@ -30,18 +32,14 @@ public enum NetworkMap {
     }
 
     private synchronized void updateCount() {
-        System.out.println("Updating Called");
         if(hostCount != null) {
-            System.out.println("Updating Text");
-            hostCount.set(String.valueOf(hostMap.size()));
+            Application.invokeAndWait(() -> hostCount.set(String.valueOf(hostMap.size())));
         }
     }
 
-    public void bindCount(StatusBar bar) {
-        Text hostText = new Text("0");
-        bar.getLeftItems().add(hostText);
-        hostCount = hostText.textProperty();
-
+    public void bindCount(Label label) {
+        hostCount = label.textProperty();
+        hostCount.set(String.valueOf(hostMap.size()));
     }
 
     public void broadcast(IMessage message) {
